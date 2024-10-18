@@ -4,7 +4,7 @@ import luxonGenerateConfig from 'rc-picker/lib/generate/luxon';
 
 const MyDatePicker = DatePicker.generatePicker<DateTime>({
     ...luxonGenerateConfig,
-    getNow: () => DateTime.local().toLocal(),
+    getNow: () => DateTime.now(),
 });
 
 export default MyDatePicker;
