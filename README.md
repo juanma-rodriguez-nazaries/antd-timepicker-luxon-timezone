@@ -1,50 +1,46 @@
-# React + TypeScript + Vite
+# Ant Design TimePicker with Luxon Timezone
+## React + TypeScript + Vite
+Using both Ant Design TimePicker and Luxon Timezone to create a TimePicker that can handle timezones.
+The objective of this issue is to find a workaround to a known issue with Ant Design TimePicker and Luxon Timezone.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Issue History
+When using keyboard typing input on the Ant Design TimePicker, the timezone is set from locale time.
+When using the mouse and selecting the time from the dropdown, the timezone is set from the Luxon config.
 
-Currently, two official plugins are available:
+### **Update**
+After updating the antd, rc-picker and luxon versions, the issue is still present, but it's reversed.
+Now, when using keyboard typing input on the Ant Design TimePicker, the timezone is set from the Luxon config.
+When using the mouse and selecting the time from the dropdown, the timezone is set from locale time.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Goal
+The goal is to have the TimePicker always set the timezone from the Luxon config, regardless of the input method.
 
-## Expanding the ESLint configuration
+## Workaround
+The workaround is to use the `getNow` function on the settings wrapper to force the instantiation of the DateTime value
+using the Luxon config and use the `parse` function to set the value on the TimePicker also when the input is changed from the keyboard.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Comment
+The workaround is not ideal, but it works for now. The issue is still open, and the goal is to find a better solution.
+We would like the wrapper to have a consistent behavior regardless of the input method and if the Luxon config is set,
+to use it regardless of the input method.
 
-- Configure the top-level `parserOptions` property like this:
+## Steps to Reproduce
+1. Clone the repository
+2. Run `pnpm install`
+3. Run `pnpm run dev`
+4. Open the browser and go to `http://localhost:5173/`
+5. Open the console and check the logs
+6. Try to change the first time input using the keyboard and press Tab to jump to the next input
+7. Try to change the second time input using the mouse and select the time from the dropdown and press OK
+8. Check the logs and see the difference in the timezone set (submit is optional)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+#### Logs sample
 ```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+parse 2024-11-13T14:14:00.000-05:00
+luxon-date-picker.component.tsx?t=1731512569067:13 defaultParse 2024-11-13T14:14:00.000+01:00
+onCalendarChange - Manual Type -  2024-11-13T14:14:00.000-05:00 America/New_York
+OnChange - Manual Type -  2024-11-13T14:14:00.000-05:00 America/New_York
+OnCalendarChange - UI Select -  2024-11-13T01:00:00.000+01:00 Europe/Madrid
+OnCalendarChange - UI Select -  2024-11-13T01:04:00.000+01:00 Europe/Madrid
+OnChange - UI Select -  2024-11-13T01:04:00.000+01:00 Europe/Madrid
 ```
